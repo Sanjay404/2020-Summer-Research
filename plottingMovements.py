@@ -1,57 +1,41 @@
 import plotly.graph_objects as go
 import pandas as pd
+from datetime import datetime
+import os
 
-ALL_DATA= pd.read_csv('/Users/sanjay/Desktop/CODE/Python/2020 Summer Research/DATA/D1.csv')
-print('Number of points I am looking at: '+ str((len(ALL_DATA))))
-ALL_DATA.head()
+directory = r'/Users/sanjay/Desktop/CODE/Python/2020 Summer Research/'
+for fileName in os.listdir(os.path.join(directory+"DATA/")): #goes through all CSVS
+    if fileName.endswith(".csv"):
+        #READ IN CSV
+        ALL_DATA= pd.read_csv(os.path.join(directory+"DATA/"+str(fileName)))
+        print('Number of points I am looking at: '+ str((len(ALL_DATA))))
+        longitude = ALL_DATA['LON']
+        latitude = ALL_DATA['LAT']
+        date = ALL_DATA['Date']
+        #list of the Date, lat, long
+        sorted_data=list(zip(date, latitude, longitude))
+        #SORT DATA BY TIME
+        sorted_data.sort(key=lambda timeString:datetime.strptime(timeString[0], '%m/%d/%Y %H:%M:%S'),reverse=False)
 
-#CONTAINS TO AND FROM LAT/LONG
-df_flight_paths = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/2011_february_aa_flight_paths.csv')
-df_flight_paths.head() 
+        #WRITE SORTED_DATA TO CSV
+        import csv
+        with open(os.path.join(directory+"SORTED DATA/"+f'sorted{fileName}'), 'w', newline='') as file:
+            writer = csv.writer(file)
+            sorted_data.insert(0, ("Date", "LAT","LONG"))
+            for row in sorted_data:
+                writer.writerow(row)
+        #Rereading data
+        DATA= pd.read_csv((os.path.join(directory+"SORTED DATA/"+f'sorted{fileName}')))
+        #simply plots data points
+        fig = go.Figure(data=go.Scattergeo(
+                lon = DATA['LONG'],
+                lat = DATA['LAT'],
+                mode = 'lines', #markers
+                ))
 
-fig = go.Figure()
+        fig.update_layout(
+                title = f'Bustard {fileName}',
+                geo_scope='asia'
+            )
+        fig.show()
 
-fig.add_trace(go.Scattergeo( 
-    locations = ["afria"],
-    locationmode = 'geojson-id',
-    lon = ALL_DATA['LON'],
-    lat = ALL_DATA['LAT'],
-    hoverinfo = 'text',
-    text = ALL_DATA['Ind_ID'],
-    mode = 'markers',
-    marker = dict(
-        size = 2,
-        color = 'rgb(255, 0, 0)',
-        line = dict(
-            width = 3,
-            color = 'rgba(68, 68, 68, 0)'
-        )
-    )))
-
-flight_paths = []
-'''
-for i in range(len(df_flight_paths)): #ACTUALLY ADDS LINES
-    fig.add_trace(
-        go.Scattergeo(
-            locationmode = 'USA-states',
-            lon = [df_flight_paths['start_lon'][i], df_flight_paths['end_lon'][i]],
-            lat = [df_flight_paths['start_lat'][i], df_flight_paths['end_lat'][i]],
-            mode = 'lines',
-            line = dict(width = 1,color = 'red'),
-            opacity = float(df_flight_paths['cnt'][i]) / float(df_flight_paths['cnt'].max()),
-        )
-    )
-'''
-fig.update_layout(
-    title_text = 'Feb. 2011 American Airline flight paths<br>(Hover for airport names)',
-    showlegend = False,
-    geo = dict(
-        scope = 'africa',
-        projection_type = 'azimuthal equal area',
-        showland = True,
-        landcolor = 'rgb(243, 243, 243)',
-        countrycolor = 'rgb(204, 204, 204)',
-    ),
-)
-
-fig.show()
