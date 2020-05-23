@@ -32,10 +32,20 @@ for fileName in os.listdir(os.path.join(directory+"DATA/")): #goes through all C
                 lat = DATA['LAT'],
                 mode = 'lines', #markers
                 ))
-
+       
+        sex= ALL_DATA['Sex']
         fig.update_layout(
-                title = f'Bustard {fileName}',
-                geo_scope='asia'
-            )
+            title = f'Bustard {fileName}; Sex: {sex[1]} ',
+            geo_scope='asia',
+        )
+        fig.update_geos(
+            lataxis_showgrid=True,
+            lonaxis_showgrid=True,
+            showlakes=True, 
+            lakecolor="Blue",
+        showrivers=True, 
+        rivercolor="Blue"
+        )
+
         fig.show()
 
