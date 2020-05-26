@@ -42,9 +42,9 @@ for fileName in os.listdir(os.path.join(directory+"DATA/")): #goes through all C
             lataxis_showgrid=True,
             lonaxis_showgrid=True,
             showlakes=True, 
-            lakecolor="Blue",
+            lakecolor="Green",
         showrivers=True, 
-        rivercolor="Blue"
+        rivercolor="Green"
         )
 
         fig.show()
