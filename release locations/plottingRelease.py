@@ -1,3 +1,5 @@
+import geopy.distance
+import math
 import csv
 import plotly.graph_objects as go
 import pandas as pd
@@ -12,11 +14,7 @@ with open(os.path.join(directory, "data.csv")) as f:
     reader = csv.reader(f)
     csvr = [tuple(line) for line in reader]
 print('Number of points I am looking at: ' + str((len(csvr))))
-
 # function that writes each row
-
-
-# count = 0
 
 
 def writeRow(fileName, rowNum):
@@ -78,10 +76,30 @@ for fileName in os.listdir(os.path.join(directory, "SORTED DATA")):
             lataxis_showgrid=True,
             lonaxis_showgrid=True,
         )
-        #fig.update_traces(hovertemplate='GDP: %{x} <br>Life Expectany: %{y}')
+        # fig.update_traces(hovertemplate='GDP: %{x} <br>Life Expectany: %{y}')
         # https://plotly.com/python/hover-text-and-formatting/
         fig.show()
 
-
+# deletes temp csvs
 for fileName in os.listdir(os.path.join(directory, "SORTED DATA")):
     os.unlink(os.path.join(directory,  "SORTED DATA", fileName))
+
+
+# finds outliers in release locations (>10km)
+outliers = set()
+for x in range(1, len(csvr)):
+    for y in range(2, len(csvr)):
+        coord1 = (float(csvr[x][5]), float(csvr[x][6]))
+        coord2 = (float(csvr[y][5]), float(csvr[y][6]))
+        if(geopy.distance.distance(coord1, coord2).km >= 10):  # DOESNT WORK
+            # https://benalexkeen.com/k-means-clustering-in-python/
+            outliers.add(tuple(csvr[x]))
+            break
+
+with open(os.path.join(directory, f'OUTLIERS.CSV'), 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["Ind_ID", "Npoints_beforecleaning", "Npoints_aftercleaning1",
+                     "Origin", "Release_Date", "Release_Lat", "Release_Lon", "Country"])
+    for e in outliers:
+        writer.writerow(list(e))
+print('Number of outliers I am looking at: ' + str((len(outliers))))
