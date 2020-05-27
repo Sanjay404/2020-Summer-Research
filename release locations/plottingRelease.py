@@ -78,28 +78,43 @@ for fileName in os.listdir(os.path.join(directory, "SORTED DATA")):
         )
         # fig.update_traces(hovertemplate='GDP: %{x} <br>Life Expectany: %{y}')
         # https://plotly.com/python/hover-text-and-formatting/
-        fig.show()
+        # fig.show()
 
+
+for fileName in os.listdir(os.path.join(directory, "SORTED DATA")):
+    if fileName.endswith(".csv"):
+        outliers = set()
+        temp = pd.read_csv(os.path.join(directory, 'SORTED DATA', fileName))
+        cordList = list(zip(temp["Ind_ID"], temp["Npoints_beforecleaning"], temp["Npoints_aftercleaning1"],
+                            temp["Origin"], temp["Release_Date"], temp["Release_Lat"], temp["Release_Lon"], temp["Country"]))
+
+        outliers = set()
+        for i in cordList:    # finds outliers in release locations (>10km)
+            outside = True
+            for j in cordList:
+                cord1 = (float(i[5]), float(i[6]))
+                cord2 = (float(j[5]), float(j[6]))
+                if i != j and geopy.distance.distance(cord1, cord2) < 10:
+                    outside = False
+            if outside:
+                outliers.add(i)
+
+        with open(os.path.join(directory, 'OUTLIERS', f'outliers_{fileName}'), 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Ind_ID", "Npoints_beforecleaning", "Npoints_aftercleaning1",
+                             "Origin", "Release_Date", "Release_Lat", "Release_Lon", "Country"])
+            for e in outliers:
+                writer.writerow(e)
+'''
+    for x in range(1, len(csvr)):
+        for y in range(2, len(csvr)):
+            coord1 = (float(csvr[x][5]), float(csvr[x][6]))
+            coord2 = (float(csvr[y][5]), float(csvr[y][6]))
+            if(geopy.distance.distance(coord1, coord2).km >= 10):  # DOESNT WORK
+                # https://benalexkeen.com/k-means-clustering-in-python/
+                outliers.add(tuple(csvr[x]))
+                break
+'''
 # deletes temp csvs
 for fileName in os.listdir(os.path.join(directory, "SORTED DATA")):
     os.unlink(os.path.join(directory,  "SORTED DATA", fileName))
-
-
-# finds outliers in release locations (>10km)
-outliers = set()
-for x in range(1, len(csvr)):
-    for y in range(2, len(csvr)):
-        coord1 = (float(csvr[x][5]), float(csvr[x][6]))
-        coord2 = (float(csvr[y][5]), float(csvr[y][6]))
-        if(geopy.distance.distance(coord1, coord2).km >= 10):  # DOESNT WORK
-            # https://benalexkeen.com/k-means-clustering-in-python/
-            outliers.add(tuple(csvr[x]))
-            break
-
-with open(os.path.join(directory, f'OUTLIERS.CSV'), 'w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(["Ind_ID", "Npoints_beforecleaning", "Npoints_aftercleaning1",
-                     "Origin", "Release_Date", "Release_Lat", "Release_Lon", "Country"])
-    for e in outliers:
-        writer.writerow(list(e))
-print('Number of outliers I am looking at: ' + str((len(outliers))))
