@@ -19,7 +19,7 @@ print('Number of points I am looking at: ' + str((len(csvr))))
 
 def writeRow(fileName, rowNum):
     if csvr[rowNum][3] == 'captive bred':  # adds origin tag to fileName
-        fileName = 'cp' + str(fileName)
+        fileName = 'cb' + str(fileName)
     else:
         fileName = csvr[rowNum][3] + str(fileName)
     # ERROR SOMEWHERE HERE
