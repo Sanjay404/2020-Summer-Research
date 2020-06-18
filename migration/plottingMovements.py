@@ -24,7 +24,7 @@ for fileName in os.listdir(os.path.join(directory+"DATA/")):  # goes through all
             writer = csv.writer(file)
             sorted_data.insert(0, ("Date", "LAT", "LONG"))
             for row in sorted_data:
-                writer.writerow(row)
+                writer.writerow(row) 
         # Rereading data
         DATA = pd.read_csv(
             (os.path.join(directory+"SORTED DATA/"+f'sorted{fileName}')))
