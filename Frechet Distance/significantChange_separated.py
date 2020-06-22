@@ -20,22 +20,28 @@ class Year(object):
     '''
     def __init__(self, name):
         self.name = name
-        self.cb = []
-        #ECCH = []
-        self.wild = []
+        #self.cb = []
+        #self.wild = []
+        self.KYZY = []
+        self.ECWP = []
+        self.NAVOIY = []
+        self.SKHBCBETPAK = []
 
 def str_to_func(tp, date):
-    funCall = { 'cb' : date.cb,
-                #'ECCH' : date.ECCH,
-                'wild' : date.wild
+    funCall = { #'cb' : date.cb,
+                #'wild' : date.wild,
+                'ECWP' : date.ECWP,
+                'KYZY'  : date.KYZY,
+                'NAVOIY': date.NAVOIY, 
+                'SKHBCBETPAK' : date.SKHBCBETPAK
             }
     return funCall.get(tp)
 import numpy as np
 import matplotlib.ticker as ticker
 
 def plot(year): #data is the class to plot    
-    fig, axs = plt.subplots(ncols=1, nrows=2,constrained_layout=True,  sharey = True, sharex = False)
-    if not len(year.cb)==0:
+    fig, axs = plt.subplots(ncols=2, nrows=2,constrained_layout=True,  sharey = True, sharex = False)
+    '''if not len(year.cb)==0:
         value, name = plotDataAverage(year.cb)
         axs[0].xaxis.set_major_locator(ticker.MultipleLocator(1))
         if(len(value) == 1):
@@ -52,7 +58,49 @@ def plot(year): #data is the class to plot
         else:
             axs[1].plot(name, value)
         axs[1].plot(name, value)
-        axs[1].title.set_text('Wild')
+        axs[1].title.set_text('Wild')'''
+        #ECCH, ECWP, SAS, SKHBC
+    if not len(year.ECWP)==0:
+        value, name = plotDataAverage(year.ECWP)
+        axs[0][0].xaxis.set_major_locator(ticker.MultipleLocator(1))
+        if len(value) == 1:
+            axs[0][0].plot(name, value, marker='o', markersize=4, color="red")
+        else:
+            axs[0][0].plot(name, value)
+        axs[0][0].plot(name, value)
+        axs[0][0].title.set_text('Separated ECWP')
+
+    if not len(year.KYZY)==0:
+        value, name = plotDataAverage(year.KYZY)
+        axs[1][0].xaxis.set_major_locator(ticker.MultipleLocator(1))
+        if len(value) == 1:
+            axs[1][0].plot(name, value, marker='o', markersize=4, color="red")
+
+        else:
+            axs[1][0].plot(name, value)
+        axs[1][0].plot(name, value)
+        axs[1][0].title.set_text('Separated KYZY')
+
+    if not len(year.NAVOIY)==0:
+        value, name = plotDataAverage(year.NAVOIY)
+        axs[0][0].xaxis.set_major_locator(ticker.MultipleLocator(1))
+        if len(value) == 1:
+            axs[0][0].plot(name, value, marker='o', markersize=4, color="red")
+        else:
+            axs[0][0].plot(name, value)
+        axs[0][0].plot(name, value)
+        axs[0][0].title.set_text('Separated NAVOIY')
+
+    if not len(year.SKHBCBETPAK)==0:
+        value, name = plotDataAverage(year.SKHBCBETPAK)
+        axs[0][1].xaxis.set_major_locator(ticker.MultipleLocator(1))
+        if len(value) == 1:
+           axs[0][1].plot(name, value, marker='o', markersize=4, color="red")
+        else:
+            axs[0][1].plot(name, value)
+        axs[0][1].plot(name, value)
+        axs[0][1].title.set_text('Separated SKHBCBETPAK')
+    
     fig.suptitle(f'Average Change in Frechet Distances For Bustards Released in {year.name}')
     fig.show()
 
@@ -108,23 +156,23 @@ def main():
     base_dir = '/Users/sanjay/Desktop/CODE/Python/2020 Summer Research/Frechet Distance/'
     dates = [c2012, c2013, c2014, c2015, c2016, c2017, c2018] # classes representing starting dates
     for folder in os.listdir(os.path.join(base_dir, "data")):
-        if not (folder == '.DS_Store'):
+        if not (folder == '.DS_Store' or folder == 'cb' or folder == 'wild'):
             imagePaths = os.listdir(os.path.join(base_dir, "data", folder))
             for image in imagePaths:
                 if 'DS_Store' in image:
                     continue   
-                split = image.split('_') 
+                split = image.split('_')
+                
+                #print(split)
                 for date in dates:
                     if split[-3] == date.name: #split[1] = release year #date.name
+                        #print(split[-3],date.name, folder)
                         tp = split[0]
-                        if tp == 'cb' or tp == 'wild':
-                            str_to_func(tp, date).append(os.path.join(base_dir, 
-                            "data", folder, image))
+                        if tp == 'ECWP' or tp == 'KYZY' or tp == 'KYZY' or tp == 'NAVOIY' : #ECWP, KYZY, NAVOIY, and SKHBCBETPAK)
+                            str_to_func(tp, date).append(os.path.join(base_dir, "data", folder, image))
                             #image.replace('.csv', '')
     for date in dates:
         #pass in each class
-        if(len(date.cb) == 0 and len(date.wild) == 0):
-            continue
         plot(date)
 
 if __name__ == '__main__':

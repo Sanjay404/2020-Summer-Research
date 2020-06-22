@@ -1,0 +1,1 @@
+We are missing distances for some seasons, so there are time when the plotted distance drops to 0, as there was no data for that year.
