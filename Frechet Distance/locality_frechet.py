@@ -83,8 +83,6 @@ def plotDataAverage(data):  #data is the list
                           str(stdError)))  #0 = locality, -2 = season,
                 return avg_dist
             except Exception as e:
-                print(e)
-                print(split)
                 return 0
     '''zipped = zip(dist,dates)
     zipped = sorted(zipped, key = lambda t: t[1])
@@ -161,7 +159,7 @@ def main():
         plt.title(
             f'Average Change in Frechet Distances For Bustards Based off Locality',
             fontsize=12)
-        #plt.savefig(fname= f'/Users/sanjay/Desktop/CODE/Python/2020 Summer Research/Frechet Distance/{loc.name}.png')
+        plt.savefig(fname=f'/Users/sanjay/Desktop/percentLocality.png')
         #plt.clf()
     plt.legend()
     plt.show()
