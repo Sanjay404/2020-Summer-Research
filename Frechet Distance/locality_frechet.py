@@ -47,9 +47,9 @@ def writeRow(tple):
 
 def str_to_func(tp, locality):
     func = {
-        'd2009_2010': locality.d2012_2013,
-        'd2010_2011': locality.d2012_2013,
-        'd2011_2012': locality.d2012_2013,
+        'd2009_2010': locality.d2009_2010,
+        'd2010_2011': locality.d2010_2011,
+        'd2011_2012': locality.d2011_2012,
         'd2012_2013': locality.d2012_2013,
         'd2013_2014': locality.d2013_2014,
         'd2014_2015': locality.d2014_2015,
@@ -75,6 +75,7 @@ def plotDataAverage(data):  #data is the list
                 avg_dist = sum(df['frechet_dist']) / (len(df['frechet_dist']))
                 dist.append(avg_dist)
                 temp = []
+                # standard error
                 for i in df['frechet_dist']:
                     temp.append(pow((i - avg_dist), 2))
                 stdev = (sum(temp) / (len(df['frechet_dist']) - 1))**(0.5)
@@ -84,12 +85,6 @@ def plotDataAverage(data):  #data is the list
                 return avg_dist
             except Exception as e:
                 return 0
-    '''zipped = zip(dist,dates)
-    zipped = sorted(zipped, key = lambda t: t[1])
-    dist, dates = list(zip(*zipped)) 
-    dist = list(dist)
-    return dist
-'''
 
 
 def main():
@@ -134,7 +129,7 @@ def main():
                                          image))  #add it to the list
 
     plt.figure()
-    plt.ylabel('Frechet Distance', fontsize=9)
+    plt.ylabel('Frechet Distance as Percentage', fontsize=9)
     plt.xlabel('Season', fontsize=9)
 
     for loc in locs:
@@ -154,12 +149,29 @@ def main():
         # x-axis is the season
         # y-axis is the distance
         lists = sorted(dic.items())  # sorted by key, return a list of tuples
-        x, y = zip(*lists)  # unpack a list of pairs into two tuples
+        x, tempy = zip(*lists)  # unpack a list of pairs into two tuples
+        tempy = list(tempy)
+        first = 0
+        for i in range(len(tempy) - 1):
+            if tempy[i] == None:
+                continue
+            else:
+                first = i
+                break
+        y = []
+        for dis in tempy:
+            try:
+                y.append((float(dis) / tempy[first]) - 1)
+            except:
+                y.append(None)
         plt.plot(x, y, label=loc.name)
         plt.title(
             f'Average Change in Frechet Distances For Bustards Based off Locality',
             fontsize=12)
-        plt.savefig(fname=f'/Users/sanjay/Desktop/percentLocality.png')
+        plt.savefig(
+            fname=
+            f'/Users/sanjay/Desktop/CODE/R/bustards/Students/Sanjay/percentLocality.png'
+        )
         #plt.clf()
     plt.legend()
     plt.show()
