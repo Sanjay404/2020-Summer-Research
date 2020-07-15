@@ -101,53 +101,9 @@ def plot(season):
     plt.figure()
     plt.ylabel('Frechet Distance', fontsize=9)
     plt.xlabel('Release Year', fontsize=9)
-    plt.title(f'Frechet Distances for {season.name}', fontsize=12)
+    plt.title(f'Frechet Distances for {season.name} Season', fontsize=12)
     for locality in season.locs:
-        x,y, locality = b(locality)
-        plt.plot(x, y, label = locality)
-
-    #plt.plot(x, y, label = locality)
-
-    ''' plt.savefig(
-        fname=
-        f'/Users/sanjay/Desktop/CODE/R/bustards/Students/Sanjay/percentLocality.png'
-        )
-    '''
-    plt.legend()
-    plt.show()
-
-
-def a(locality):
         dic = {} #a dictionary for each locality
-        for year in locality.release_years:
-            if(len(year.list)>0):
-                dic[year.name]= plotDataAverage(year.list)     
-        if len(dic) == 0:
-            return         
-        lists = sorted(dic.items())  # sorted by key, return a list of tuples
-        locality = locality.name
-        x, y = zip(*lists)  # unpack a list of pairs into two tuples
-        return x,y, locality
-
-
-def b(locality):
-        x = []
-        y = []
-        for year in locality.release_years:
-            if(len(year.list)>0):
-                x.append(year.name)
-                y.append(plotDataAverage(year.list))             
-        locality = locality.name
-        if len(x) == 0:
-            return
-        zipped = zip(x,y)
-        zipped = sorted(zipped, key = lambda x: x[0]) 
-        x, y = zip(*zipped) 
-        return x,y,locality
-
-'''
-for locality in season.locs:
-        #dic = {} #a dictionary for each locality
         x = []
         y = []
         for year in locality.release_years:
@@ -158,25 +114,65 @@ for locality in season.locs:
                 
         if len(x) == 0:
             continue
-      
+        '''
         lists = sorted(dic.items())  # sorted by key, return a list of tuples
         locality = locality.name
         x, y = zip(*lists)  # unpack a list of pairs into two tuples
-  
+        '''
+        #print('before', x, y)
         zipped = zip(x,y)
         zipped = sorted(zipped, key = lambda x: x[0]) 
         x, y = zip(*zipped) 
-
+        #print('after', x ,y)
+        x = [int(i) for i in x]
+        y = [i for i in y]
+        for yerr in x:
+            if(yerr<2009 or yerr>2019):
+                print(yerr)
         plt.plot(x, y, label = locality.name)
-
-  plt.savefig(
-            fname=
-            f'/Users/sanjay/Desktop/CODE/R/bustards/Students/Sanjay/percentLocality.png'
-        )
-
+        plt.xticks(range(2009,2020))
+        plt.yticks(range(0,1400000, 100000))            
     plt.legend()
-    plt.show()
+    plt.savefig(
+            fname= f'/Users/sanjay/Desktop/CODE/R/bustards/Students/Sanjay/frechet distances/Frechet Distances by season/{season.name}.png'
+        )
+    #plt.show()
+
 '''
+def a(season):
+    for locality in season.locs:
+        dic = {} #a dictionary for each locality
+        for year in locality.release_years:
+            if(len(year.list)>0):
+                dic[year.name]= plotDataAverage(year.list)              
+        if len(dic) == 0:
+            continue
+        lists = sorted(dic.items())  # sorted by key, return a list of tuples
+        locality = locality.name
+        x, y = zip(*lists)  # unpack a list of pairs into two tuples
+        return x,y, locality
+
+
+def b(season):
+    for locality in season.locs:
+        x = []
+        y = []
+        for year in locality.release_years:
+            if(len(year.list)>0):
+                x.append(year.name)
+                y.append(plotDataAverage(year.list))
+                
+        if len(x) == 0:
+            continue
+        locality = season.name
+        zipped = zip(x,y)
+        zipped = sorted(zipped, key = lambda x: x[0]) 
+        x, y = zip(*zipped)
+    return x,y,locality  
+
+'''
+
+
 def main():
     #each season has all the types of breeding, which has each release year
     y2009 =  Season('2009')
